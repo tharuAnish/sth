@@ -1,0 +1,12 @@
+import Header from "../header"
+
+export default function CommonLayout({ children }) {
+  return (
+    <div className="mx-auto max-w-7xl p-6">
+      <main>
+        <Header />
+        {children}
+      </main>
+    </div>
+  )
+}
