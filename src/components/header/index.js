@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Button } from "../ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet"
 import { AlignJustify, Moon } from "lucide-react"
-// import { UserButton } from "@clerk/nextjs"
+import { UserButton } from "@clerk/nextjs"
 import { useTheme } from "next-themes"
 
 function Header({ user, profileInfo }) {
@@ -83,12 +83,12 @@ function Header({ user, profileInfo }) {
                   </Link>
                 ) : null
               )}
-              <Moon
+              {/* <Moon
                 className="cursor-pointer mb-4"
                 fill={theme === "dark" ? "light" : "dark"}
                 onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              />
-              {/* <UserButton afterSignOutUrl="/" /> */}
+              /> */}
+              <UserButton afterSignOutUrl="/" />
             </div>
           </SheetContent>
         </Sheet>
@@ -112,7 +112,7 @@ function Header({ user, profileInfo }) {
             fill={theme === "dark" ? "light" : "dark"}
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
           /> */}
-          {/* <UserButton afterSignOutUrl="/" /> */}
+          <UserButton afterSignOutUrl="/" />
         </nav>
       </header>
     </div>
