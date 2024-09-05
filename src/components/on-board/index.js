@@ -10,10 +10,15 @@ import {
   recruiterOnboardFormControls,
 } from "@/utils"
 import { useUser } from "@clerk/nextjs"
-// import { createProfileAction } from "@/actions";
-// import { createClient } from "@supabase/supabase-js";
+import { createProfileAction } from "@/actions"
+import { createClient } from "@supabase/supabase-js"
 
-export default function OnBoard() {
+const supabaseClient = createClient(
+  "https://xzhdqrzeossqqvhqgysk.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6aGRxcnplb3NzcXF2aHFneXNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU1MjQ5MzIsImV4cCI6MjA0MTEwMDkzMn0.BpZ4ERhRzS0ZqENjkAKDk9tAQ91F0_051230u_LldK4"
+)
+
+function OnBoard() {
   const [currentTab, setCurrentTab] = useState("candidate")
   const [recruiterFormData, setRecruiterFormData] = useState(
     initialRecruiterFormData
@@ -21,10 +26,77 @@ export default function OnBoard() {
   const [candidateFormData, setCandidateFormData] = useState(
     initialCandidateFormData
   )
+  const [file, setFile] = useState(null)
+
+  const currentAuthUser = useUser()
+  const { user } = currentAuthUser
 
   function handleTabChange(value) {
     setCurrentTab(value)
   }
+
+  function handleFileChange(event) {
+    event.preventDefault()
+    setFile(event.target.files[0])
+  }
+
+  async function handleUploadPdfToSupabase() {
+    const { data, error } = await supabaseClient.storage
+      .from("job-board")
+      .upload(`/public/${file.name}`, file, {
+        cacheControl: "3600",
+        upsert: false,
+      })
+    console.log(data, error)
+    if (data) {
+      setCandidateFormData({
+        ...candidateFormData,
+        resume: data.path,
+      })
+    }
+  }
+
+  useEffect(() => {
+    if (file) handleUploadPdfToSupabase()
+  }, [file])
+
+  function handleRecuiterFormValid() {
+    return (
+      recruiterFormData &&
+      recruiterFormData.name.trim() !== "" &&
+      recruiterFormData.companyName.trim() !== "" &&
+      recruiterFormData.companyRole.trim() !== ""
+    )
+  }
+
+  function handleCandidateFormValid() {
+    return Object.keys(candidateFormData).every(
+      (key) => candidateFormData[key].trim() !== ""
+    )
+  }
+
+  async function createProfile() {
+    const data =
+      currentTab === "candidate"
+        ? {
+            candidateInfo: candidateFormData,
+            role: "candidate",
+            isPremiumUser: false,
+            userId: user?.id,
+            email: user?.primaryEmailAddress?.emailAddress,
+          }
+        : {
+            recruiterInfo: recruiterFormData,
+            role: "recruiter",
+            isPremiumUser: false,
+            userId: user?.id,
+            email: user?.primaryEmailAddress?.emailAddress,
+          }
+
+    await createProfileAction(data, "/onboard")
+  }
+
+  console.log(candidateFormData)
 
   return (
     <div className="bg-white">
@@ -42,13 +114,13 @@ export default function OnBoard() {
         </div>
         <TabsContent value="candidate">
           <CommonForm
-            // action={createProfile}
+            action={createProfile}
             formData={candidateFormData}
             setFormData={setCandidateFormData}
             formControls={candidateOnboardFormControls}
             buttonText={"Onboard as candidate"}
-            // handleFileChange={handleFileChange}
-            // isBtnDisabled={!handleCandidateFormValid()}
+            handleFileChange={handleFileChange}
+            isBtnDisabled={!handleCandidateFormValid()}
           />
         </TabsContent>
         <TabsContent value="recruiter">
@@ -57,11 +129,13 @@ export default function OnBoard() {
             buttonText={"Onboard as recruiter"}
             formData={recruiterFormData}
             setFormData={setRecruiterFormData}
-            // isBtnDisabled={!handleRecuiterFormValid()}
-            // action={createProfile}
+            isBtnDisabled={!handleRecuiterFormValid()}
+            action={createProfile}
           />
         </TabsContent>
       </Tabs>
     </div>
   )
 }
+
+export default OnBoard
