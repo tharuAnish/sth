@@ -10,10 +10,9 @@ import {
   recruiterOnboardFormControls,
 } from "@/utils"
 import { useUser } from "@clerk/nextjs"
-// import { createProfileAction } from "@/actions";
-// import { createClient } from "@supabase/supabase-js";
+import { createProfileAction } from "@/actions"
 
-export default function OnBoard() {
+function OnBoard() {
   const [currentTab, setCurrentTab] = useState("candidate")
   const [recruiterFormData, setRecruiterFormData] = useState(
     initialRecruiterFormData
@@ -21,10 +20,48 @@ export default function OnBoard() {
   const [candidateFormData, setCandidateFormData] = useState(
     initialCandidateFormData
   )
+  const [file, setFile] = useState(null)
+
+  const currentAuthUser = useUser()
+  const { user } = currentAuthUser
+
+  console.log(candidateFormData)
 
   function handleTabChange(value) {
     setCurrentTab(value)
   }
+
+  function handleRecuiterFormValid() {
+    return (
+      recruiterFormData &&
+      recruiterFormData.name.trim() !== "" &&
+      recruiterFormData.companyName.trim() !== "" &&
+      recruiterFormData.companyRole.trim() !== ""
+    )
+  }
+
+  async function createProfile() {
+    const data =
+      currentTab === "candidate"
+        ? {
+            candidateInfo: candidateFormData,
+            role: "candidate",
+            isPremiumUser: false,
+            userId: user?.id,
+            email: user?.primaryEmailAddress?.emailAddress,
+          }
+        : {
+            recruiterInfo: recruiterFormData,
+            role: "recruiter",
+            isPremiumUser: false,
+            userId: user?.id,
+            email: user?.primaryEmailAddress?.emailAddress,
+          }
+
+    await createProfileAction(data, "/onboard")
+  }
+
+  console.log(candidateFormData)
 
   return (
     <div className="bg-white">
@@ -42,7 +79,7 @@ export default function OnBoard() {
         </div>
         <TabsContent value="candidate">
           <CommonForm
-            // action={createProfile}
+            action={createProfile}
             formData={candidateFormData}
             setFormData={setCandidateFormData}
             formControls={candidateOnboardFormControls}
@@ -58,10 +95,12 @@ export default function OnBoard() {
             formData={recruiterFormData}
             setFormData={setRecruiterFormData}
             // isBtnDisabled={!handleRecuiterFormValid()}
-            // action={createProfile}
+            action={createProfile}
           />
         </TabsContent>
       </Tabs>
     </div>
   )
 }
+
+export default OnBoard
