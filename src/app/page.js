@@ -9,5 +9,5 @@ export default async function Home() {
 
   if (user && !profileInfo?._id) redirect("/onboard")
 
-  return <section>MainContent</section>
+  return <section>Landing Page</section>
 }

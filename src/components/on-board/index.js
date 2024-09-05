@@ -11,6 +11,12 @@ import {
 } from "@/utils"
 import { useUser } from "@clerk/nextjs"
 import { createProfileAction } from "@/actions"
+import { createClient } from "@supabase/supabase-js"
+
+const supabaseClient = createClient(
+  "https://xzhdqrzeossqqvhqgysk.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6aGRxcnplb3NzcXF2aHFneXNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU1MjQ5MzIsImV4cCI6MjA0MTEwMDkzMn0.BpZ4ERhRzS0ZqENjkAKDk9tAQ91F0_051230u_LldK4"
+)
 
 function OnBoard() {
   const [currentTab, setCurrentTab] = useState("candidate")
@@ -25,11 +31,34 @@ function OnBoard() {
   const currentAuthUser = useUser()
   const { user } = currentAuthUser
 
-  console.log(candidateFormData)
-
   function handleTabChange(value) {
     setCurrentTab(value)
   }
+
+  function handleFileChange(event) {
+    event.preventDefault()
+    setFile(event.target.files[0])
+  }
+
+  async function handleUploadPdfToSupabase() {
+    const { data, error } = await supabaseClient.storage
+      .from("job-board")
+      .upload(`/public/${file.name}`, file, {
+        cacheControl: "3600",
+        upsert: false,
+      })
+    console.log(data, error)
+    if (data) {
+      setCandidateFormData({
+        ...candidateFormData,
+        resume: data.path,
+      })
+    }
+  }
+
+  useEffect(() => {
+    if (file) handleUploadPdfToSupabase()
+  }, [file])
 
   function handleRecuiterFormValid() {
     return (
@@ -37,6 +66,12 @@ function OnBoard() {
       recruiterFormData.name.trim() !== "" &&
       recruiterFormData.companyName.trim() !== "" &&
       recruiterFormData.companyRole.trim() !== ""
+    )
+  }
+
+  function handleCandidateFormValid() {
+    return Object.keys(candidateFormData).every(
+      (key) => candidateFormData[key].trim() !== ""
     )
   }
 
@@ -84,8 +119,8 @@ function OnBoard() {
             setFormData={setCandidateFormData}
             formControls={candidateOnboardFormControls}
             buttonText={"Onboard as candidate"}
-            // handleFileChange={handleFileChange}
-            // isBtnDisabled={!handleCandidateFormValid()}
+            handleFileChange={handleFileChange}
+            isBtnDisabled={!handleCandidateFormValid()}
           />
         </TabsContent>
         <TabsContent value="recruiter">
@@ -94,7 +129,7 @@ function OnBoard() {
             buttonText={"Onboard as recruiter"}
             formData={recruiterFormData}
             setFormData={setRecruiterFormData}
-            // isBtnDisabled={!handleRecuiterFormValid()}
+            isBtnDisabled={!handleRecuiterFormValid()}
             action={createProfile}
           />
         </TabsContent>
