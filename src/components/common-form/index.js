@@ -53,7 +53,26 @@ export default function CommonForm({
         )
 
       default:
-        return null
+        content = (
+          <div className="relative flex items-center mt-8">
+            <Input
+              type="text"
+              disabled={getCurrentControl.disabled}
+              placeholder={getCurrentControl.placeholder}
+              name={getCurrentControl.name}
+              id={getCurrentControl.name}
+              value={formData[getCurrentControl.name]}
+              onChange={(event) =>
+                setFormData({
+                  ...formData,
+                  [event.target.name]: event.target.value,
+                })
+              }
+              className="w-full dark:bg-black rounded-md h-[60px] px-4 border bg-gray-100 text-lg outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-white focus:drop-shadow-lg focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
+          </div>
+        )
+        break
     }
   }
 
@@ -61,7 +80,7 @@ export default function CommonForm({
     <form action={action}>
       {formControls.map((control) => renderInputByComponentType(control))}
       <Button
-        className="mt-6 disabled:opacity-65"
+        className="mt-6 disabled:opacity-65 disabled:opacity-60 flex h-11 items-center justify-center px-5"
         type={btnType || "submit"}
         disabled={isBtnDisabled}
       >
