@@ -7,15 +7,16 @@ export default async function Jobs() {
   const user = await currentUser()
   const profileInfo = await fetchProfileAction(user?.id)
 
-  const jobList = await fetchJobsForRecruiterAction(user?.id)
+  const jobList = await fetchJobsForRecruiterAction(user?._id)
 
-  console.log(jobList, "JobList")
+  console.log("PostedJobList", jobList)
 
   return (
     <div>
       <JobListing
         use={JSON.parse(JSON.stringify(user))}
         profileInfo={profileInfo}
+        jobList={jobList}
       />
     </div>
   )
