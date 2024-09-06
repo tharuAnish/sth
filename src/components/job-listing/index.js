@@ -2,7 +2,13 @@ import CandidateJobCard from "../candidate-job-card"
 import PostNewJob from "../post-new-job"
 import RecruiterJobCard from "../recruiter-job-card"
 
-export default function JobListing({ user, profileInfo, jobList }) {
+export default function JobListing({
+  user,
+  profileInfo,
+  jobList,
+  jobApplications,
+}) {
+  console.log("jobApplications", jobApplications)
   return (
     <div>
       <div className="mx-auto max-w-7xl">
@@ -30,16 +36,15 @@ export default function JobListing({ user, profileInfo, jobList }) {
                     ? jobList.map((jobItem) =>
                         profileInfo?.role === "candidate" ? (
                           <CandidateJobCard
-                            // profileInfo={profileInfo}
+                            profileInfo={profileInfo}
                             jobItem={jobItem}
-                            // jobApplications={jobApplications}
+                            jobApplications={jobApplications}
                           />
                         ) : (
-                          // <p>Candidate</p>
                           <RecruiterJobCard
-                            // profileInfo={profileInfo}
+                            profileInfo={profileInfo}
                             jobItem={jobItem}
-                            // jobApplications={jobApplications}
+                            jobApplications={jobApplications}
                           />
                         )
                       )
