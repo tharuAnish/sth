@@ -41,7 +41,6 @@ export default function JobListing({
                             jobApplications={jobApplications}
                           />
                         ) : (
-                          // <p>Candidate</p>
                           <RecruiterJobCard
                             profileInfo={profileInfo}
                             jobItem={jobItem}

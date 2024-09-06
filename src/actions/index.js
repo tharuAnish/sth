@@ -13,7 +13,6 @@ export async function createProfileAction(formData, pathToRevalidate) {
   revalidatePath(pathToRevalidate)
 }
 
-//fetch profile
 export async function fetchProfileAction(id) {
   await connectToDB()
   const result = await Profile.findOne({ userId: id })
@@ -105,5 +104,58 @@ export async function updateJobApplicationAction(data, pathToRevalidate) {
     },
     { new: true }
   )
+  revalidatePath(pathToRevalidate)
+}
+
+//get candidate detAils by candidate ID
+export async function getCandidateDetailsByIDAction(currentCandidateID) {
+  await connectToDB()
+  const result = await Profile.findOne({ userId: currentCandidateID })
+
+  return JSON.parse(JSON.stringify(result))
+}
+
+//create filter categories
+export async function createFilterCategoryAction() {
+  await connectToDB()
+  const result = await Job.find({})
+
+  return JSON.parse(JSON.stringify(result))
+}
+
+//update profile action
+export async function updateProfileAction(data, pathToRevalidate) {
+  await connectToDB()
+  const {
+    userId,
+    role,
+    email,
+    isPremiumUser,
+    memberShipType,
+    memberShipStartDate,
+    memberShipEndDate,
+    recruiterInfo,
+    candidateInfo,
+    _id,
+  } = data
+
+  await Profile.findOneAndUpdate(
+    {
+      _id: _id,
+    },
+    {
+      userId,
+      role,
+      email,
+      isPremiumUser,
+      memberShipType,
+      memberShipStartDate,
+      memberShipEndDate,
+      recruiterInfo,
+      candidateInfo,
+    },
+    { new: true }
+  )
+
   revalidatePath(pathToRevalidate)
 }

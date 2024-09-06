@@ -46,6 +46,7 @@ function CandidateJobCard({ jobItem, profileInfo, jobApplications }) {
   }
 
   console.log(
+    "CandidateJC",
     "JobItem",
     jobItem,
     "ProfileInfo",

@@ -9,13 +9,13 @@ import {
   fetchProfileAction,
 } from "@/actions"
 
-export default async function Jobs() {
+export default async function Jobs({ searchParams }) {
   const user = await currentUser()
   const profileInfo = await fetchProfileAction(user?.id)
 
   const jobList =
     profileInfo?.role === "candidate"
-      ? await fetchJobsForCandidateAction()
+      ? await fetchJobsForCandidateAction(searchParams)
       : await fetchJobsForRecruiterAction(user?.id)
 
   const getJobApplicationList =
@@ -26,6 +26,7 @@ export default async function Jobs() {
   // const fetchFilterCategories = await createFilterCategoryAction();
 
   console.log("PostedJobList", jobList)
+  console.log("Candidate user", user)
 
   return (
     <div>
