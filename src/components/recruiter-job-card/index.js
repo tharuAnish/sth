@@ -6,13 +6,23 @@ import JobIcon from "../job-icon"
 import { Button } from "../ui/button"
 import JobApplicants from "../job-applicants"
 
-function RecruiterJobCard({ jobItem, jobApplications }) {
+function RecruiterJobCard({ jobItem, jobApplications, profileInfo }) {
   const [showApplicantsDrawer, setShowApplicantsDrawer] = useState(false)
   const [currentCandidateDetails, setCurrentCandidateDetails] = useState(null)
   const [
     showCurrentCandidateDetailsModal,
     setShowCurrentCandidateDetailsModal,
   ] = useState(false)
+
+  console.log(
+    "RecruiterJC",
+    "JobItem",
+    jobItem,
+    "ProfileInfo",
+    profileInfo,
+    "JobApplications",
+    jobApplications
+  )
 
   return (
     <div>

@@ -8,7 +8,7 @@ export default function JobListing({
   jobList,
   jobApplications,
 }) {
-  console.log("jobApplications", jobApplications)
+  // console.log("jobApplications", jobApplications)
   return (
     <div>
       <div className="mx-auto max-w-7xl">
