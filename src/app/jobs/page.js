@@ -16,7 +16,7 @@ export default async function Jobs({ searchParams }) {
   const jobList =
     profileInfo?.role === "candidate"
       ? await fetchJobsForCandidateAction(searchParams)
-      : await fetchJobsForRecruiterAction(user?.id)
+      : await fetchJobsForRecruiterAction(user?._id)
 
   const getJobApplicationList =
     profileInfo?.role === "candidate"
